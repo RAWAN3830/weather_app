@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:weather_app/provider.dart';
 import 'package:weather_app/weather_item_model.dart';
 
 import 'api_repo.dart';
@@ -43,12 +45,13 @@ class _Second_screenState extends State<Second_screen> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<weatherProvider>(context,listen: true);
     return Scaffold(
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: (provider.getTheme == false)? AppColors.primaryColor :Colors.black,
         appBar: AppBar(
           title: const Text('Forecasts'),
           centerTitle: true,
-          backgroundColor: AppColors.primaryColor,
+          backgroundColor: Colors.transparent,//AppColors.primaryColor,
           elevation: 0.0,
         ),
         body: (isload == true)
@@ -64,8 +67,8 @@ class _Second_screenState extends State<Second_screen> {
                 width: 400,
                 // height: AppConstants.size.height * .75,
                 // width: AppConstants.size.width,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration:  BoxDecoration(
+                  color: (provider.getTheme == false) ? Colors.white : Colors.grey.shade800,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(50),
                     topRight: Radius.circular(50),
@@ -86,11 +89,19 @@ class _Second_screenState extends State<Second_screen> {
                   width: double.infinity,
                   // width: AppConstants.size.width * .7,
                   decoration: BoxDecoration(
-                    gradient: const LinearGradient(
+                    gradient: (provider.getTheme == false) ?  LinearGradient(
                         begin: Alignment.topLeft,
                         end: Alignment.center,
                         colors: [
                           Color(0xffa9c1f5),
+                          Color(0xff6696f5),
+                        ])
+                        :
+                    LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.black54,
                           Color(0xff6696f5),
                         ]),
                     boxShadow: [
@@ -186,7 +197,7 @@ class _Second_screenState extends State<Second_screen> {
             ),
           ),
           Positioned(
-            top: 435,
+            top: 440,
             left: 10,
             right: 8,
             child: Container(
@@ -197,7 +208,7 @@ class _Second_screenState extends State<Second_screen> {
                 itemBuilder: (context, index) {
                   return Card(
                     borderOnForeground: true,
-                    color: Colors.blue.shade100,
+                    color: (provider.getTheme == false)?Colors.blue.shade100 :Colors.black12,
                     elevation: 3.0,
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -215,9 +226,9 @@ class _Second_screenState extends State<Second_screen> {
                                       "https:" + wm!.current!.condition!.icon),
                                   Text(
                                     '${widget.hour![index].tempC.toString()}°c',
-                                    // forecastModel.maxTemperature.toString(),
-                                    style: const TextStyle(
-                                      color: Colors.black87,
+
+                                    style:  TextStyle(
+                                      color:(provider.getTheme == false)? Colors.black54 : Colors.white70,
                                       fontSize: 25,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -227,9 +238,9 @@ class _Second_screenState extends State<Second_screen> {
                               ),
                               Text(
                                 "${DateFormat.j().format(DateTime.parse(widget.hour![index].time))}",
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 18,
-                                  color: Colors.black,
+                                  color: (provider.getTheme == false)? Colors.black54 : Colors.white70,
                                 ),
                               ),
 
@@ -237,7 +248,7 @@ class _Second_screenState extends State<Second_screen> {
                               Container(
 
                                 child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
@@ -254,20 +265,19 @@ class _Second_screenState extends State<Second_screen> {
                                             widget.hour![index].feelslikeC
                                                 .toString(),
                                             style: TextStyle(
-                                                color: Colors.blue,
+                                                color: (provider.getTheme == false)? Colors.blue : Colors.white70,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18)),
                                       ],
                                     ),
                                     Row(
-
                                       children: [
                                          SizedBox(height: 20,child: Image.asset('assets/icons/windspeed.png'),),
                                         Text(
                                           "${widget.hour![index].windMph} km"
                                                 .toString(),
                                             style: TextStyle(
-                                                color: Colors.blue,
+                                                color:(provider.getTheme == false)? Colors.blue : Colors.white70,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 18)),
                                       ],

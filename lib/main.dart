@@ -4,10 +4,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:weather_app/Splash_screen/Splash_Screen.dart';
 import 'package:weather_app/api_repo.dart';
 import 'package:weather_app/modelclass.dart';
 import 'package:weather_app/provider.dart';
-import 'package:weather_app/searchScreen.dart';
 import 'package:weather_app/second_page.dart';
 
 import 'appcolor.dart';
@@ -71,31 +71,82 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController searchController = TextEditingController();
     var height = MediaQuery.of(context).size.height;
     var width = MediaQuery.of(context).size.width;
     final provider = Provider.of<weatherProvider>(context,listen: true);
     return Scaffold(
+      appBar:  AppBar(
+        // automaticallyImplyLeading: false,
+        toolbarHeight: 100,
+        title: Container(
+          child: Material(
+            elevation: 5,
+            borderRadius: BorderRadius.circular(15),
+            color: Colors.white,
+            child: TextField(
+              onSubmitted: (value){
+                searchController.text = value;
+                Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => MyHomePage(title: searchController.text),), (route) => false);
+              },
+              controller: searchController,
+              style: TextStyle(color: Colors.black),
+              maxLines: 1,
+              decoration: InputDecoration(
+                hintStyle: TextStyle(color: Colors.grey),
+                border: InputBorder.none,
+                focusedBorder: InputBorder.none,
+                enabledBorder: InputBorder.none,
+                icon: Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Icon(
+                    Icons.search,
+                    color: Colors.blue,
+                  ),
+                ),
+                contentPadding: EdgeInsets.only(
+                  left: 0,
+                  bottom: 11,
+                  top: 11,
+                  right: 15,
+                ),
+                hintText: "Search Location",
+              ),
+            ),
+          ),
+        ),
+      ),
       body: SingleChildScrollView(
         child:(isload == true)
-        ? Center(child: CircularProgressIndicator())
+        ? Container(
+          height: height,
+            child: Center(child: CircularProgressIndicator()))
         : Column(
           children: [
             SizedBox(
-              height: 10,
+              height: 0,
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                height: 550,
+                height: 540,
                 width: width,
                 decoration: BoxDecoration(
                   // image: DecorationImage(image: AssetImage),
-                  gradient: LinearGradient(
+                  gradient: (provider.getTheme == false)
+                      ? LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [Colors.blue.shade100, Colors.blue]),
+                      colors: [Colors.blue.shade200, Colors.blue])
+                      :
+                  LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Colors.black87, Colors.blue]),
+
+
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Column(
@@ -105,112 +156,88 @@ class _MyHomePageState extends State<MyHomePage> {
                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          height: 65,
-                          width: 65,
-                          decoration: BoxDecoration(
-                              color: Colors.black45,
-                              borderRadius: BorderRadius.circular(50)),
-                          child: IconButton(
+                          height: 55,
+                          width: 55,
+                          decoration: BoxDecoration(color: Colors.black54,borderRadius: BorderRadius.circular(40)),
+                          child:
+                              // Container(
+                              //   height: 60,
+                              //   width: 60,
+                              //   decoration: BoxDecoration(
+                              //     image: DecorationImage(image: AssetImage('assets/weather/01d.png')),
+                              //     color: Colors.black
+                              //   ),
+
+                              // ),
+                          IconButton(
                             onPressed: () {},
                             icon: (provider.isTheme == true)
                                 ? Center(
-                              child: IconButton(
-                                  onPressed: () {
-                                      provider.setTheme = false;
-
+                              child:
+                                GestureDetector(
+                                  onTap:() {
+                                    provider.setTheme = false;
                                   },
-                                  icon: Center(
-                                      child: Icon(
-                                        CupertinoIcons.pause_fill,
-                                        size: 35,
-                                        color: Colors.white,
-                                      ))),
+                                    child: CircleAvatar(child: Image.asset('assets/weather/01n.png'),backgroundColor: Colors.transparent,))
                             )
                                 : Center(
-                              child: IconButton(
-                                  onPressed: () {
-                                      provider.setTheme = true;
-                                  },
-                                  icon: Icon(
-                                    CupertinoIcons.play_arrow_solid,
-                                    size: 35,
-                                    color: Colors.white,
-                                  )),
+                              child:
+                              GestureDetector(
+                                onTap: (){
+                                  provider.setTheme = true;
+                                },
+                                  child: CircleAvatar(child: Image.asset('assets/weather/01d.png'),backgroundColor: Colors.transparent,))
+
                             ),
                           ),
                         ),
-                        // Switch(
-                        // focusColor: Colors.blue,
-                        //   activeTrackColor: Colors.blue,
-                        //     dragStartBehavior: DragStartBehavior.start,
-                        //     value: provider.getTheme, onChanged: (value){
-                        //   provider.setTheme = value;
-                        //   provider.setThemeSharePrefrence(value);
-                        // }),
-                        Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Row(
-                             mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Container(
-                                height: 50,
-                                width: 50,
-                                decoration: BoxDecoration(
-                                ),
-                                child:
-                                IconButton(icon:Icon(CupertinoIcons.location_solid,color: Colors.black54,size: 30,),
-                                  onPressed: () {
-                                  Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchScreen(
-                                      city: wm!.location!.name!,
-                                      tid: wm!.location!.tzId!,
-                                      tempc: wm!.current!.tempC!.toString(),
-                                      tempf: wm!.current!.tempF!.toString(),
-                                      Icon: wm!.current!.condition!.icon ,
-                                      tags: 1 ,)));
-                                  },
-                                ),
-                              ),
-                              SizedBox(width: 10,),
-                              Text(
-                                wm!.location!.country,
-                                // homeNotifier.weatherModel.currentWeather.weatherName,
-                                style: const TextStyle(
-                                  color: Colors.black54,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 25.0,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
                       ],
                     ),
-                    SizedBox(
-                      height: 120,
-                      child: Image.asset("assets/new_icons/sunny.png"),
+                    Container(
+                      height: 100,
+                      width: 100,
+                      child: Image.network("https:" + wm!.current!.condition!.icon,fit: BoxFit.contain),
                     ),
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                         Image.network("https:" + wm!.current!.condition!.icon),
                         Padding(
                           padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(
-                            wm!.current!.tempC.round().toString(),
+                          child: (provider.getTheme == false) ?Text(
+                            "${wm!.current!.tempC.round().toString()}°c",
                             style: TextStyle(
-                                fontSize: 80,
+                                fontSize: 60,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black54
                                 // foreground: Paint()..shader = AppColors.shader,
                                 ),
-                          ),
+                          )
+                              :
+                          Text(
+                            "${wm!.current!.tempC.round().toString()}°c",
+                            style: TextStyle(
+                                fontSize: 60,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white54
+                              // foreground: Paint()..shader = AppColors.shader,
+                            ),
+                          )
                         ),
 
                       ],
                     ),
                     Text(
+                      wm!.location!.country,
+                      // homeNotifier.weatherModel.currentWeather.weatherName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25.0,
+                      ),
+                    ),
+                    Text(
+
                       wm!.location!.name + ' | '+ wm!.location!.region,
                       // homeNotifier.weatherModel.currentWeather.weatherName,
                       style: const TextStyle(
@@ -329,10 +356,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       height: 300,
                       decoration: BoxDecoration(
                         // color: Colors.transparent,
-                          gradient: LinearGradient(
+                          gradient: (provider.getTheme == false)?LinearGradient(
                               begin: Alignment.topLeft,
                               end: Alignment.bottomCenter,
-                              colors: [Colors.blue, Colors.blue.shade300]),
+                              colors: [Colors.blue, Colors.blue.shade300])
+                          : LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [Colors.black54, Colors.blue.shade400]),
                           borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
@@ -363,13 +394,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceAround,
                                           children: [
+                                            // Container(
+                                            //   height: 80,
+                                            //   width: 80,
+                                            //   decoration: BoxDecoration(
+                                            //       image: DecorationImage(
+                                            //           image: AssetImage(
+                                            //               'assets/new_icons/moderateorheavyrainshower.png'))),
+                                            // ),
                                             Container(
-                                              height: 80,
-                                              width: 80,
-                                              decoration: BoxDecoration(
-                                                  image: DecorationImage(
-                                                      image: AssetImage(
-                                                          'assets/new_icons/moderateorheavyrainshower.png'))),
+                                              height: 100,
+                                              width: 100,
+                                              child: Image.network("https:" + wm!.current!.condition!.icon,fit: BoxFit.contain),
                                             ),
                                             Column(
                                               children: [
